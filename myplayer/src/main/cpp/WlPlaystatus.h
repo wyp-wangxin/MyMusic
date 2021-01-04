@@ -9,6 +9,7 @@
 class WlPlaystatus {
 public:
     bool exit;
+    bool load;
     WlPlaystatus();
     ~WlPlaystatus();
 };

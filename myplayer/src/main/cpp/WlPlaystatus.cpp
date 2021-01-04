@@ -6,4 +6,9 @@
 
 WlPlaystatus::WlPlaystatus() {
     this->exit= false;
+    this->load= true;
+}
+
+WlPlaystatus::~WlPlaystatus() {
+
 }

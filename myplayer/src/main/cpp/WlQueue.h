@@ -25,9 +25,10 @@ public:
 
     int putAvpacket(AVPacket* packet);
 
-    void getAvpacket(AVPacket* packet);
+    int getAvpacket(AVPacket* packet);
 
     int getQueueSize();
+    void clearAvpacket();
 };
 
 

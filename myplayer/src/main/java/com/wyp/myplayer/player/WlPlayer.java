@@ -2,7 +2,12 @@ package com.wyp.myplayer.player;
 
 import android.text.TextUtils;
 
+import com.wyp.myplayer.WlTimeInfoBean;
+import com.wyp.myplayer.listener.WlOnErrorListener;
+import com.wyp.myplayer.listener.WlOnLoadListener;
 import com.wyp.myplayer.listener.WlOnParparedListener;
+import com.wyp.myplayer.listener.WlOnPauseResumeListener;
+import com.wyp.myplayer.listener.WlOnTimeInfoListener;
 import com.wyp.myplayer.log.MyLog;
 
 /**
@@ -24,8 +29,12 @@ public class WlPlayer {
     }
 
     private String source;//数据源
+    private static WlTimeInfoBean wlTimeInfoBean;
     private WlOnParparedListener wlOnParparedListener;
-
+    private WlOnLoadListener wlOnLoadListener;
+    private WlOnPauseResumeListener wlOnPauseResumeListener;
+    private WlOnTimeInfoListener wlOnTimeInfoListener;
+    private WlOnErrorListener wlOnErrorListener;
 
     public WlPlayer()
     {}
@@ -46,6 +55,22 @@ public class WlPlayer {
     public void setWlOnParparedListener(WlOnParparedListener wlOnParparedListener)
     {
         this.wlOnParparedListener = wlOnParparedListener;
+    }
+
+    public void setWlOnLoadListener(WlOnLoadListener wlOnLoadListener) {
+        this.wlOnLoadListener = wlOnLoadListener;
+    }
+
+    public void setWlOnPauseResumeListener(WlOnPauseResumeListener wlOnPauseResumeListener) {
+        this.wlOnPauseResumeListener = wlOnPauseResumeListener;
+    }
+
+    public void setWlOnTimeInfoListener(WlOnTimeInfoListener wlOnTimeInfoListener) {
+        this.wlOnTimeInfoListener = wlOnTimeInfoListener;
+    }
+
+    public void setWlOnErrorListener(WlOnErrorListener wlOnErrorListener) {
+        this.wlOnErrorListener = wlOnErrorListener;
     }
 
     public void parpared()
@@ -78,7 +103,33 @@ public class WlPlayer {
             }
         }).start();
     }
+    public void stop()
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                n_stop();
+            }
+        }).start();
+    }
 
+    public void pause()
+    {
+        n_pause();
+        if(wlOnPauseResumeListener != null)
+        {
+            wlOnPauseResumeListener.onPause(true);
+        }
+    }
+
+    public void resume()
+    {
+        n_resume();
+        if(wlOnPauseResumeListener != null)
+        {
+            wlOnPauseResumeListener.onPause(false);
+        }
+    }
 
     /**
      * c++回调java的方法
@@ -93,9 +144,41 @@ public class WlPlayer {
 
     public native void n_parpared(String source);
     public native void n_start();
+    private native void n_pause();
+    private native void n_resume();
+    private native void n_stop();
 
+    public WlOnLoadListener getWlOnLoadListener() {
+        return wlOnLoadListener;
+    }
 
+    public void onCallLoad(boolean bool){
+        if(wlOnLoadListener!=null){
+            wlOnLoadListener.onLoad(bool);
+        }
+    }
 
+    public void onCallTimeInfo(int currentTime, int totalTime)
+    {
+        if(wlOnTimeInfoListener != null)
+        {
+            if(wlTimeInfoBean == null)
+            {
+                wlTimeInfoBean = new WlTimeInfoBean();
+            }
+            wlTimeInfoBean.setCurrentTime(currentTime);
+            wlTimeInfoBean.setTotalTime(totalTime);
+            wlOnTimeInfoListener.onTimeInfo(wlTimeInfoBean);
+        }
+    }
 
+    public void onCallError(int code, String msg)
+    {
+        if(wlOnErrorListener != null)
+        {
+            stop();
+            wlOnErrorListener.onError(code, msg);
+        }
+    }
 
 }
