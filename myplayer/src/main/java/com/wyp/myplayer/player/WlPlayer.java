@@ -32,6 +32,7 @@ public class WlPlayer {
     private  String source;//数据源
     private static boolean playNext = false;
     private static WlTimeInfoBean wlTimeInfoBean;
+    private static int duration = -1;
 
     private WlOnParparedListener wlOnParparedListener;
     private WlOnLoadListener wlOnLoadListener;
@@ -113,6 +114,8 @@ public class WlPlayer {
     }
     public void stop()
     {
+        wlTimeInfoBean = null;
+        duration = -1;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -151,7 +154,14 @@ public class WlPlayer {
         playNext = true;
         stop();
     }
-
+    public int getDuration()
+    {
+        if(duration < 0)
+        {
+            duration = n_duration();
+        }
+        return duration;
+    }
 
     /**
      * c++回调java的方法
@@ -170,6 +180,7 @@ public class WlPlayer {
     private native void n_resume();
     private native void n_stop();
     private native void n_seek(int secds);
+    private native int n_duration();
 
     public WlOnLoadListener getWlOnLoadListener() {
         return wlOnLoadListener;

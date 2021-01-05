@@ -133,3 +133,13 @@ Java_com_wyp_myplayer_player_WlPlayer_n_1seek(JNIEnv *env, jobject thiz, jint se
         fFmpeg->seek(secds);
     }
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_wyp_myplayer_player_WlPlayer_n_1duration(JNIEnv *env, jobject thiz) {
+    // TODO: implement n_duration()
+    if(fFmpeg != NULL)
+    {
+        return fFmpeg->duration;
+    }
+    return -1;
+}

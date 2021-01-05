@@ -5,6 +5,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import com.wyp.myplayer.WlTimeInfoBean;
 import com.wyp.myplayer.listener.WlOnCompleteListener;
@@ -22,11 +23,16 @@ public class MainActivity extends AppCompatActivity {
     private WlPlayer wlPlayer;
     private TextView tvTime;
 
+    private SeekBar seekBarSeek;
+    private int position = 0;
+    private boolean isSeekBar = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tvTime = findViewById(R.id.tv_time);
+        seekBarSeek = findViewById(R.id.seekbar_seek);
         wlPlayer = new WlPlayer();
         wlPlayer.setWlOnParparedListener(new WlOnParparedListener() {
             @Override
@@ -88,6 +94,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        seekBarSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(wlPlayer.getDuration() > 0 && isSeekBar)
+                {
+                    position = wlPlayer.getDuration() * progress / 100;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                isSeekBar = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                wlPlayer.seek(position);
+                isSeekBar = false;
+            }
+        });
+
     }
 
 
@@ -114,9 +141,15 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if(msg.what == 1)
             {
-                WlTimeInfoBean wlTimeInfoBean = (WlTimeInfoBean) msg.obj;
-                tvTime.setText(WlTimeUtil.secdsToDateFormat(wlTimeInfoBean.getTotalTime(), wlTimeInfoBean.getTotalTime())
-                        + "/" + WlTimeUtil.secdsToDateFormat(wlTimeInfoBean.getCurrentTime(), wlTimeInfoBean.getTotalTime()));
+                if(!isSeekBar)
+                {
+                    WlTimeInfoBean wlTimeInfoBean = (WlTimeInfoBean) msg.obj;
+                    tvTime.setText(WlTimeUtil.secdsToDateFormat(wlTimeInfoBean.getTotalTime(), wlTimeInfoBean.getTotalTime())
+                            + "/" + WlTimeUtil.secdsToDateFormat(wlTimeInfoBean.getCurrentTime(), wlTimeInfoBean.getTotalTime()));
+
+                    seekBarSeek.setProgress(wlTimeInfoBean.getCurrentTime() * 100 / wlTimeInfoBean.getTotalTime());
+
+                }
             }
         }
     };
