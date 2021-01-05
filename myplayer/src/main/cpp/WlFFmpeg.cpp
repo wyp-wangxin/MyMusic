@@ -180,7 +180,7 @@ void WlFFmpeg::start() {
                 count++;
                 if(LOG_DEBUG)
                 {
-                    LOGE("解码第 %d 帧", count);
+                    //LOGE("解码第 %d 帧", count);
                 }
                 audio->queue->putAvpacket(avPacket);
 

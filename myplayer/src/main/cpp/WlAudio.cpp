@@ -109,7 +109,7 @@ int WlAudio::resampleAudio() {
             int out_channels = av_get_channel_layout_nb_channels(AV_CH_LAYOUT_STEREO);
             data_size = nb * out_channels * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
             //ret = fwrite(buffer,1,data_size,outFile);
-            LOGE("data_size is %d,ret=%d", data_size,ret);
+            //LOGE("data_size is %d,ret=%d", data_size,ret);
 
             now_time = avFrame->pts * av_q2d(time_base);
             if(now_time < clock)
@@ -139,7 +139,7 @@ int WlAudio::resampleAudio() {
 
     }
     //fflush(outFile);
-    LOGE("outFile is fflush");
+    //LOGE("outFile is fflush");
     return data_size;
 }
 

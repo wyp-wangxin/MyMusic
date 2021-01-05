@@ -29,8 +29,10 @@ public class WlPlayer {
         System.loadLibrary("swscale-4");
     }
 
-    private String source;//数据源
+    private  String source;//数据源
+    private static boolean playNext = false;
     private static WlTimeInfoBean wlTimeInfoBean;
+
     private WlOnParparedListener wlOnParparedListener;
     private WlOnLoadListener wlOnLoadListener;
     private WlOnPauseResumeListener wlOnPauseResumeListener;
@@ -143,6 +145,13 @@ public class WlPlayer {
         n_seek(secds);
     }
 
+    public void playNext(String url)
+    {
+        source = url;
+        playNext = true;
+        stop();
+    }
+
 
     /**
      * c++回调java的方法
@@ -202,6 +211,15 @@ public class WlPlayer {
         {
             stop();
             wlOnCompleteListener.onComplete();
+        }
+    }
+
+    public void onCallNext()
+    {
+        if(playNext)
+        {
+            playNext = false;
+            parpared();
         }
     }
 

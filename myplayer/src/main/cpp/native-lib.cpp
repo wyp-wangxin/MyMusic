@@ -24,7 +24,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
     JNIEnv *env;
     if(vm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK)
     {
-
         return result;
     }
     return JNI_VERSION_1_4;
@@ -101,6 +100,8 @@ Java_com_wyp_myplayer_player_WlPlayer_n_1stop(JNIEnv *env, jobject instance) {
     {
         return;
     }
+    jclass jlz = env->GetObjectClass(instance);
+    jmethodID jmid_next = env->GetMethodID(jlz, "onCallNext", "()V");
     nexit = false;
     if(fFmpeg != NULL)
     {
@@ -119,6 +120,7 @@ Java_com_wyp_myplayer_player_WlPlayer_n_1stop(JNIEnv *env, jobject instance) {
         }
     }
     nexit = true;
+    env->CallVoidMethod(instance, jmid_next);
 }
 
 extern "C"

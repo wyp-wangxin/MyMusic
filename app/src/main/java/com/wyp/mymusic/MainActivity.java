@@ -128,4 +128,8 @@ public class MainActivity extends AppCompatActivity {
     public void seek(View view) {
         wlPlayer.seek(15);
     }
+
+    public void next(View view) {
+        wlPlayer.playNext("http://v-cdn.zjol.com.cn/276984.mp4");
+    }
 }
