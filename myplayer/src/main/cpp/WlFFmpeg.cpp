@@ -11,6 +11,7 @@ WlFFmpeg::WlFFmpeg(WlPlaystatus *playstatus,WlCallJava *callJava, const char *ur
     this->url = url;
     exit = false;
     pthread_mutex_init(&init_mutex, NULL);
+    pthread_mutex_init(&seek_mutex, NULL);
 }
 
 void *decodeFFmpeg(void *data)
@@ -78,6 +79,7 @@ void WlFFmpeg::decodeFFmpegThread() {
                 audio->codecpar = pFormatCtx->streams[i]->codecpar;
                 audio->duration = pFormatCtx->duration / AV_TIME_BASE;
                 audio->time_base = pFormatCtx->streams[i]->time_base;
+                duration= audio->duration;
             }
         }
     }
@@ -157,8 +159,20 @@ void WlFFmpeg::start() {
 
     while(playstatus!=NULL&&!playstatus->exit)
     {
+        if(playstatus->seek)
+        {
+            continue;
+        }
+
+        if(audio->queue->getQueueSize() > 20)
+        {
+            continue;
+        }
         AVPacket *avPacket = av_packet_alloc();
-        if(av_read_frame(pFormatCtx, avPacket) == 0)
+
+        int res = av_read_frame(pFormatCtx, avPacket);
+
+        if( res == 0)
         {
             if(avPacket->stream_index == audio->streamIndex)
             {
@@ -168,8 +182,6 @@ void WlFFmpeg::start() {
                 {
                     LOGE("解码第 %d 帧", count);
                 }
-                /*av_packet_free(&avPacket);
-                av_free(avPacket);*/
                 audio->queue->putAvpacket(avPacket);
 
             } else{
@@ -189,21 +201,18 @@ void WlFFmpeg::start() {
                 {
                     continue;
                 } else{
+                    LOGE(" playstatus decode finished");
                     playstatus->exit = true;
                     break;
                 }
             }
         }
     }
-    //模拟出队
-   /* while (audio->queue->getQueueSize() > 0)
+
+    if(callJava != NULL)
     {
-        AVPacket *packet = av_packet_alloc();
-        audio->queue->getAvpacket(packet);
-        av_packet_free(&packet);
-        av_free(packet);
-        packet = NULL;
-    }*/
+        callJava->onCallComplete(CHILD_THREAD);
+    }
     exit=true;
     if(LOG_DEBUG)
     {
@@ -228,19 +237,9 @@ void WlFFmpeg::resume() {
 void WlFFmpeg::release() {
     if(LOG_DEBUG)
     {
-        LOGE("开始释放Ffmpe");
-    }
-
-    if(playstatus->exit)
-    {
-        return;
-    }
-    if(LOG_DEBUG)
-    {
-        LOGE("开始释放Ffmpe2");
+        LOGE("开始释放Ffmpe playstatus->exit : %d",playstatus->exit);
     }
     playstatus->exit = true;
-
     pthread_mutex_lock(&init_mutex);
     int sleepCount = 0;
     while (!exit)
@@ -300,5 +299,30 @@ void WlFFmpeg::release() {
 }
 
 WlFFmpeg::~WlFFmpeg() {
+    pthread_mutex_destroy(&seek_mutex);
+    pthread_mutex_destroy(&init_mutex);
+}
 
+void WlFFmpeg::seek(int64_t secds) {
+
+    if(duration <= 0)
+    {
+        return;
+    }
+    if(secds >= 0 && secds <= duration)
+    {
+        if(audio != NULL)
+        {
+            playstatus->seek = true;
+            audio->queue->clearAvpacket();
+            audio->clock = 0;
+            audio->last_tiem = 0;
+            pthread_mutex_lock(&seek_mutex);
+            int64_t rel = secds * AV_TIME_BASE;
+            avformat_seek_file(pFormatCtx, -1, INT64_MIN, rel, INT64_MAX, 0);
+            pthread_mutex_unlock(&seek_mutex);
+            playstatus->seek = false;
+
+        }
+    }
 }

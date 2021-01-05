@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import com.wyp.myplayer.WlTimeInfoBean;
+import com.wyp.myplayer.listener.WlOnCompleteListener;
 import com.wyp.myplayer.listener.WlOnErrorListener;
 import com.wyp.myplayer.listener.WlOnLoadListener;
 import com.wyp.myplayer.listener.WlOnParparedListener;
@@ -79,6 +80,14 @@ public class MainActivity extends AppCompatActivity {
                 MyLog.d("code:" + code + ", msg:" + msg);
             }
         });
+
+        wlPlayer.setWlOnCompleteListener(new WlOnCompleteListener() {
+            @Override
+            public void onComplete() {
+                MyLog.d("播放完成了");
+            }
+        });
+
     }
 
 
@@ -114,5 +123,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void stop(View view) {
         wlPlayer.stop();
+    }
+
+    public void seek(View view) {
+        wlPlayer.seek(15);
     }
 }

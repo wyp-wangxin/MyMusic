@@ -110,6 +110,14 @@ int WlAudio::resampleAudio() {
             data_size = nb * out_channels * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
             //ret = fwrite(buffer,1,data_size,outFile);
             LOGE("data_size is %d,ret=%d", data_size,ret);
+
+            now_time = avFrame->pts * av_q2d(time_base);
+            if(now_time < clock)
+            {
+                now_time = clock;
+            }
+            clock = now_time;
+
             av_packet_free(&avPacket);
             av_free(avPacket);
             avPacket = NULL;
