@@ -14,6 +14,7 @@ import com.wyp.myplayer.listener.WlOnLoadListener;
 import com.wyp.myplayer.listener.WlOnParparedListener;
 import com.wyp.myplayer.listener.WlOnPauseResumeListener;
 import com.wyp.myplayer.listener.WlOnTimeInfoListener;
+import com.wyp.myplayer.listener.WlOnValumeDBListener;
 import com.wyp.myplayer.log.MyLog;
 import com.wyp.myplayer.muteenum.MuteEnum;
 import com.wyp.myplayer.player.WlPlayer;
@@ -105,6 +106,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        wlPlayer.setWlOnValumeDBListener(new WlOnValumeDBListener() {
+            @Override
+            public void onDbValue(int db) {
+                MyLog.d("当前DB : "+db);
+            }
+        });
         seekBarSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

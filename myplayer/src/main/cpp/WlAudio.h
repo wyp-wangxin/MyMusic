@@ -99,6 +99,8 @@ public:
     void setPitch(float pitch);//設置音調
 
     void setSpeed(float speed);//設置音速
+
+    int getPCMDB(char *pcmcata, size_t pcmsize);
 };
 
 

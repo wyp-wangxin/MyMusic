@@ -26,7 +26,7 @@ WlCallJava::WlCallJava(_JavaVM *javaVM, JNIEnv *env, jobject *obj) {
     jmid_timeinfo = env->GetMethodID(jlz, "onCallTimeInfo", "(II)V");
     jmid_error = env->GetMethodID(jlz, "onCallError", "(ILjava/lang/String;)V");
     jmid_complete = env->GetMethodID(jlz, "onCallComplete", "()V");
-
+    jmid_valumedb = env->GetMethodID(jlz, "onCallValumeDB", "(I)V");
 }
 
 void WlCallJava::onCallParpared(int type) {
@@ -149,5 +149,27 @@ void WlCallJava::onCallComplete(int type) {
         javaVM->DetachCurrentThread();
     }
 
+}
+
+void WlCallJava::onCallValumeDB(int type, int db) {
+
+    if(type == MAIN_THREAD)
+    {
+        jniEnv->CallVoidMethod(jobj, jmid_valumedb, db);
+    }
+    else if(type == CHILD_THREAD)
+    {
+        JNIEnv *jniEnv;
+        if(javaVM->AttachCurrentThread(&jniEnv, 0) != JNI_OK)
+        {
+            if(LOG_DEBUG)
+            {
+                LOGE("call onCallComplete worng");
+            }
+            return;
+        }
+        jniEnv->CallVoidMethod(jobj, jmid_valumedb, db);
+        javaVM->DetachCurrentThread();
+    }
 }
 

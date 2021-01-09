@@ -203,6 +203,8 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void * context)
                 //回调应用层
                 wlAudio->wlCallJava->onCallTimeInfo(CHILD_THREAD, wlAudio->clock, wlAudio->duration);
             }
+            wlAudio->wlCallJava->onCallValumeDB(CHILD_THREAD,
+            wlAudio->getPCMDB(reinterpret_cast<char *>(wlAudio->sampleBuffer), buffersize * 4));
             (* wlAudio-> pcmBufferQueue)->Enqueue( wlAudio->pcmBufferQueue, (char *) wlAudio-> sampleBuffer, buffersize*2*2);
         }
     }
@@ -475,6 +477,23 @@ void WlAudio::setMute(int mute) {
 
 
     }
+}
+
+int WlAudio::getPCMDB(char *pcmcata, size_t pcmsize) {
+    int db = 0;
+    short int pervalue = 0;
+    double sum = 0;
+    for(int i = 0; i < pcmsize; i+= 2)
+    {
+        memcpy(&pervalue, pcmcata+i, 2);
+        sum += abs(pervalue);
+    }
+    sum = sum / (pcmsize / 2);
+    if(sum > 0)
+    {
+        db = (int)20.0 *log10(sum);
+    }
+    return db;
 }
 
 

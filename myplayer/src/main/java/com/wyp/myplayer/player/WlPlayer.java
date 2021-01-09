@@ -9,6 +9,7 @@ import com.wyp.myplayer.listener.WlOnLoadListener;
 import com.wyp.myplayer.listener.WlOnParparedListener;
 import com.wyp.myplayer.listener.WlOnPauseResumeListener;
 import com.wyp.myplayer.listener.WlOnTimeInfoListener;
+import com.wyp.myplayer.listener.WlOnValumeDBListener;
 import com.wyp.myplayer.log.MyLog;
 import com.wyp.myplayer.muteenum.MuteEnum;
 
@@ -45,6 +46,7 @@ public class WlPlayer {
     private WlOnTimeInfoListener wlOnTimeInfoListener;
     private WlOnErrorListener wlOnErrorListener;
     private WlOnCompleteListener wlOnCompleteListener;
+    private WlOnValumeDBListener wlOnValumeDBListener;
 
     public WlPlayer()
     {}
@@ -85,6 +87,10 @@ public class WlPlayer {
 
     public void setWlOnCompleteListener(WlOnCompleteListener wlOnCompleteListener) {
         this.wlOnCompleteListener = wlOnCompleteListener;
+    }
+
+    public void setWlOnValumeDBListener(WlOnValumeDBListener wlOnValumeDBListener) {
+        this.wlOnValumeDBListener = wlOnValumeDBListener;
     }
 
     public void parpared()
@@ -274,6 +280,14 @@ public class WlPlayer {
         {
             playNext = false;
             parpared();
+        }
+    }
+
+    public void onCallValumeDB(int db)
+    {
+        if(wlOnValumeDBListener != null)
+        {
+            wlOnValumeDBListener.onDbValue(db);
         }
     }
 
