@@ -27,13 +27,21 @@ public class MainActivity extends AppCompatActivity {
     private int position = 0;
     private boolean isSeekBar = false;
 
+    private SeekBar seekBarVolume;
+    private TextView tvVolume;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tvTime = findViewById(R.id.tv_time);
         seekBarSeek = findViewById(R.id.seekbar_seek);
+        seekBarVolume= findViewById(R.id.seekbar_volume);
+        tvVolume = findViewById(R.id.tv_volume);
+
         wlPlayer = new WlPlayer();
+        tvVolume.setText("音量：" + wlPlayer.getVolumePercent() + "%");
+        seekBarVolume.setProgress(wlPlayer.getVolumePercent());
         wlPlayer.setWlOnParparedListener(new WlOnParparedListener() {
             @Override
             public void onParpared() {
@@ -112,6 +120,25 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 wlPlayer.seek(position);
                 isSeekBar = false;
+            }
+        });
+
+        seekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                wlPlayer.setVolume(progress);
+                tvVolume.setText("音量：" + wlPlayer.getVolumePercent() + "%");
+                MyLog.d("progress is " + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 

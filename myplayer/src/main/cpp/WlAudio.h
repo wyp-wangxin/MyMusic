@@ -39,6 +39,9 @@ public:
     double now_time;//当前frame时间
     double last_tiem; //上一次调用时间
 
+    int volumePercent = 100;//默认音量
+
+
     // 引擎接口
     SLObjectItf engineObject = NULL;
     SLEngineItf engineEngine = NULL;
@@ -51,6 +54,7 @@ public:
     //pcm
     SLObjectItf pcmPlayerObject = NULL;
     SLPlayItf pcmPlayerPlay = NULL;
+    SLVolumeItf pcmVolumePlay = NULL;//用于音量控制相关
 
     //缓冲器队列接口
     SLAndroidSimpleBufferQueueItf pcmBufferQueue = NULL;
@@ -72,6 +76,8 @@ public:
     void stop();
 
     void release();
+
+    void setVolume(int percent);//设置音量
 };
 
 

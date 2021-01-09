@@ -33,6 +33,7 @@ public class WlPlayer {
     private static boolean playNext = false;
     private static WlTimeInfoBean wlTimeInfoBean;
     private static int duration = -1;
+    private static int volumePercent = 100;//保存音量用
 
     private WlOnParparedListener wlOnParparedListener;
     private WlOnLoadListener wlOnLoadListener;
@@ -108,6 +109,7 @@ public class WlPlayer {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                setVolume(volumePercent);
                 n_start();
             }
         }).start();
@@ -163,6 +165,21 @@ public class WlPlayer {
         return duration;
     }
 
+    public void setVolume(int percent)
+    {
+        if(percent >=0 && percent <= 100)
+        {
+            volumePercent = percent;
+            n_volume(percent);
+        }
+    }
+
+    public int getVolumePercent()
+    {
+        return volumePercent;
+    }
+
+
     /**
      * c++回调java的方法
      */
@@ -181,6 +198,7 @@ public class WlPlayer {
     private native void n_stop();
     private native void n_seek(int secds);
     private native int n_duration();
+    private native void n_volume(int percent);
 
     public WlOnLoadListener getWlOnLoadListener() {
         return wlOnLoadListener;

@@ -42,6 +42,7 @@ public:
     void resume();
     void release();
     void seek(int64_t secds);
+    void setVolume(int percent);
 
 };
 

@@ -142,4 +142,12 @@ Java_com_wyp_myplayer_player_WlPlayer_n_1duration(JNIEnv *env, jobject thiz) {
         return fFmpeg->duration;
     }
     return -1;
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_wyp_myplayer_player_WlPlayer_n_1volume(JNIEnv *env, jobject instance, jint percent) {
+
+    if(fFmpeg!=NULL){
+        fFmpeg->setVolume(percent);
+    }
+
 }
