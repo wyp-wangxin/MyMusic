@@ -15,6 +15,7 @@ import com.wyp.myplayer.listener.WlOnParparedListener;
 import com.wyp.myplayer.listener.WlOnPauseResumeListener;
 import com.wyp.myplayer.listener.WlOnTimeInfoListener;
 import com.wyp.myplayer.log.MyLog;
+import com.wyp.myplayer.muteenum.MuteEnum;
 import com.wyp.myplayer.player.WlPlayer;
 import com.wyp.myplayer.util.WlTimeUtil;
 
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         wlPlayer = new WlPlayer();
         tvVolume.setText("音量：" + wlPlayer.getVolumePercent() + "%");
         seekBarVolume.setProgress(wlPlayer.getVolumePercent());
+        wlPlayer.setMute(MuteEnum.MUTE_CENTER);//设置声道立体声
+
         wlPlayer.setWlOnParparedListener(new WlOnParparedListener() {
             @Override
             public void onParpared() {
@@ -211,5 +214,17 @@ public class MainActivity extends AppCompatActivity {
     public void normalspeedpitch(View view) {
         wlPlayer.setSpeed(1.0f);
         wlPlayer.setPitch(1.0f);
+    }
+
+    public void left(View view) {
+        wlPlayer.setMute(MuteEnum.MUTE_LEFT);
+    }
+
+    public void right(View view) {
+        wlPlayer.setMute(MuteEnum.MUTE_RIGHT);
+    }
+
+    public void center(View view) {
+        wlPlayer.setMute(MuteEnum.MUTE_CENTER);
     }
 }

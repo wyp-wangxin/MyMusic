@@ -101,7 +101,7 @@ int WlAudio::resampleAudio(void **pcmbuf) {
                 continue;
             }
 
-            int nb = swr_convert(swrContext,
+            nb = swr_convert(swrContext,
                                  &buffer,
                                  avFrame->nb_samples,
                                  (const uint8_t **)(avFrame->data),
@@ -247,10 +247,10 @@ void WlAudio::initOpenSLES() {
     SLDataSource slDataSource = {&android_queue, &pcm};
 
 
-    const SLInterfaceID ids[2] = {SL_IID_BUFFERQUEUE,SL_IID_VOLUME};
-    const SLboolean req[2] = {SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE};
+    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE,SL_IID_VOLUME,SL_IID_MUTESOLO};
+    const SLboolean req[3] = {SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE};
 
-    (*engineEngine)->CreateAudioPlayer(engineEngine, &pcmPlayerObject, &slDataSource, &audioSnk, 2, ids, req);
+    (*engineEngine)->CreateAudioPlayer(engineEngine, &pcmPlayerObject, &slDataSource, &audioSnk, 3, ids, req);
     //初始化播放器
     (*pcmPlayerObject)->Realize(pcmPlayerObject, SL_BOOLEAN_FALSE);
 
@@ -258,6 +258,9 @@ void WlAudio::initOpenSLES() {
     (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_PLAY, &pcmPlayerPlay);
 
     (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_VOLUME, &pcmVolumePlay);//获取音量控制接口pcmVolumePlay
+
+
+    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_MUTESOLO, &pcmMutePlay);  //获取声道接口
 
 //    注册回调缓冲区 获取缓冲队列接口
     (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_BUFFERQUEUE, &pcmBufferQueue);
@@ -447,6 +450,30 @@ void WlAudio::setSpeed(float speed) {
     if(soundTouch != NULL)
     {
         soundTouch->setTempo(speed);
+    }
+}
+
+void WlAudio::setMute(int mute) {
+    this->mute = mute;
+    if(pcmMutePlay != NULL)
+    {
+        if(mute == 0)//right
+        {
+            (*pcmMutePlay)->SetChannelMute(pcmMutePlay, 1, false);
+            (*pcmMutePlay)->SetChannelMute(pcmMutePlay, 0, true);
+        }
+        else if(mute == 1)//left
+        {
+            (*pcmMutePlay)->SetChannelMute(pcmMutePlay, 1, true);
+            (*pcmMutePlay)->SetChannelMute(pcmMutePlay, 0, false);
+        }
+        else if(mute == 2)//center
+        {
+            (*pcmMutePlay)->SetChannelMute(pcmMutePlay, 1, false);
+            (*pcmMutePlay)->SetChannelMute(pcmMutePlay, 0, false);
+        }
+
+
     }
 }
 

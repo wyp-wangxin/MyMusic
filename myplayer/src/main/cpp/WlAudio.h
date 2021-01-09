@@ -41,7 +41,7 @@ public:
     double last_tiem; //上一次调用时间
 
     int volumePercent = 100;//默认音量
-
+    int mute = 2;
 
     // 引擎接口
     SLObjectItf engineObject = NULL;
@@ -56,7 +56,7 @@ public:
     SLObjectItf pcmPlayerObject = NULL;
     SLPlayItf pcmPlayerPlay = NULL;
     SLVolumeItf pcmVolumePlay = NULL;//用于音量控制相关
-
+    SLMuteSoloItf  pcmMutePlay = NULL;//用于声道设置
     //缓冲器队列接口
     SLAndroidSimpleBufferQueueItf pcmBufferQueue = NULL;
 
@@ -94,6 +94,7 @@ public:
 
     int getSoundTouchData();//SoundTouch 處理PCM數據
 
+    void setMute(int mute);
 
     void setPitch(float pitch);//設置音調
 

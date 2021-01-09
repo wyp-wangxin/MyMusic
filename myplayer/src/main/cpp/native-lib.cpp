@@ -168,4 +168,14 @@ Java_com_wyp_myplayer_player_WlPlayer_n_1speed(JNIEnv *env, jobject instance, jf
         fFmpeg->setSpeed(speed);
     }
 
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_wyp_myplayer_player_WlPlayer_n_1mute(JNIEnv *env, jobject instance, jint mute) {
+
+    // TODO
+    if(fFmpeg != NULL)
+    {
+        fFmpeg->setMute(mute);
+    }
+
 }

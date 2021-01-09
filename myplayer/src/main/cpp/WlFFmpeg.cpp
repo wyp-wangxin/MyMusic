@@ -347,3 +347,10 @@ void WlFFmpeg::setSpeed(float speed) {
         audio->setSpeed(speed);
     }
 }
+
+void WlFFmpeg::setMute(int mute) {
+    if(audio != NULL)
+    {
+        audio->setMute(mute);
+    }
+}

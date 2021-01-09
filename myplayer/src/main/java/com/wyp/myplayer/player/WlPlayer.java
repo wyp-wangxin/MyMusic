@@ -10,6 +10,7 @@ import com.wyp.myplayer.listener.WlOnParparedListener;
 import com.wyp.myplayer.listener.WlOnPauseResumeListener;
 import com.wyp.myplayer.listener.WlOnTimeInfoListener;
 import com.wyp.myplayer.log.MyLog;
+import com.wyp.myplayer.muteenum.MuteEnum;
 
 /**
  * Created by yangw on 2018-2-28.
@@ -36,6 +37,7 @@ public class WlPlayer {
     private static int volumePercent = 100;//保存音量用
     private static float speed = 1.0f;
     private static float pitch = 1.0f;
+    private static MuteEnum muteEnum = MuteEnum.MUTE_CENTER;
 
     private WlOnParparedListener wlOnParparedListener;
     private WlOnLoadListener wlOnLoadListener;
@@ -112,6 +114,7 @@ public class WlPlayer {
             @Override
             public void run() {
                 setVolume(volumePercent);
+                setMute(muteEnum);
                 n_start();
             }
         }).start();
@@ -181,7 +184,12 @@ public class WlPlayer {
         return volumePercent;
     }
 
+    public void setMute(MuteEnum mute)
 
+    {
+        muteEnum = mute;
+        n_mute(mute.getValue());
+    }
     public void setPitch(float p)
     {
         pitch = p;
@@ -205,6 +213,7 @@ public class WlPlayer {
     private native void n_seek(int secds);
     private native int n_duration();
     private native void n_volume(int percent);
+    private native void n_mute(int mute);
     private native void n_pitch(float pitch);
     private native void n_speed(float speed);
 
