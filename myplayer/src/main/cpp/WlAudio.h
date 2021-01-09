@@ -9,6 +9,7 @@
 #include "pthread.h"
 #include "AndroidLog.h"
 #include "WlCallJava.h"
+#include "SoundTouch.h"
 extern "C"
 {
 #include <SLES/OpenSLES.h>
@@ -16,7 +17,7 @@ extern "C"
 #include "libavcodec/avcodec.h"
 #include "libswresample/swresample.h"
 };
-
+using namespace soundtouch;
 class WlAudio {
 
 public:
@@ -59,13 +60,25 @@ public:
     //缓冲器队列接口
     SLAndroidSimpleBufferQueueItf pcmBufferQueue = NULL;
 
+    //SoundTouch
+    SoundTouch *soundTouch = NULL;
+    SAMPLETYPE *sampleBuffer = NULL;
+    bool finished = true;
+    uint8_t *out_buffer = NULL;
+    int nb = 0;
+    int num = 0;
+
+    float pitch = 1.0f;//默認音調
+    float speed = 1.0f;//默認音樂速度
+
+
 public:
     WlAudio(WlPlaystatus* wlPlaystatus,int sample_rate,WlCallJava * wlCallJava);
     ~WlAudio();
 
     void play();
 
-    int resampleAudio();
+    int resampleAudio(void **pcmbuf);
     void initOpenSLES();
     int getCurrentSampleRateForOpensles(int sample_rate);
 
@@ -78,6 +91,13 @@ public:
     void release();
 
     void setVolume(int percent);//设置音量
+
+    int getSoundTouchData();//SoundTouch 處理PCM數據
+
+
+    void setPitch(float pitch);//設置音調
+
+    void setSpeed(float speed);//設置音速
 };
 
 

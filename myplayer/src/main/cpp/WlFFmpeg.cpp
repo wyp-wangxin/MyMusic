@@ -333,3 +333,17 @@ void WlFFmpeg::setVolume(int percent) {
         audio->setVolume(percent);
     }
 }
+
+void WlFFmpeg::setPitch(float pitch) {
+    if(audio != NULL)
+    {
+        audio->setPitch(pitch);
+    }
+}
+
+void WlFFmpeg::setSpeed(float speed) {
+    if(audio != NULL)
+    {
+        audio->setSpeed(speed);
+    }
+}

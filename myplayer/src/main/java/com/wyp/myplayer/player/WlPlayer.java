@@ -34,6 +34,8 @@ public class WlPlayer {
     private static WlTimeInfoBean wlTimeInfoBean;
     private static int duration = -1;
     private static int volumePercent = 100;//保存音量用
+    private static float speed = 1.0f;
+    private static float pitch = 1.0f;
 
     private WlOnParparedListener wlOnParparedListener;
     private WlOnLoadListener wlOnLoadListener;
@@ -180,16 +182,20 @@ public class WlPlayer {
     }
 
 
-    /**
-     * c++回调java的方法
-     */
-    public void onCallParpared()
+    public void setPitch(float p)
     {
-        if(wlOnParparedListener != null)
-        {
-            wlOnParparedListener.onParpared();
-        }
+        pitch = p;
+        n_pitch(pitch);
     }
+
+    public void setSpeed(float s)
+    {
+        speed = s;
+        n_speed(speed);
+    }
+
+
+
 
     public native void n_parpared(String source);
     public native void n_start();
@@ -199,9 +205,19 @@ public class WlPlayer {
     private native void n_seek(int secds);
     private native int n_duration();
     private native void n_volume(int percent);
+    private native void n_pitch(float pitch);
+    private native void n_speed(float speed);
 
-    public WlOnLoadListener getWlOnLoadListener() {
-        return wlOnLoadListener;
+
+    /**
+     * c++回调java的方法
+     */
+    public void onCallParpared()
+    {
+        if(wlOnParparedListener != null)
+        {
+            wlOnParparedListener.onParpared();
+        }
     }
 
     public void onCallLoad(boolean bool){

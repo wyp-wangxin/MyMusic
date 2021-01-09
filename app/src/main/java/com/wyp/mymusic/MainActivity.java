@@ -192,4 +192,24 @@ public class MainActivity extends AppCompatActivity {
     public void next(View view) {
         wlPlayer.playNext("http://v-cdn.zjol.com.cn/276984.mp4");
     }
+
+    public void speed(View view) {
+        wlPlayer.setSpeed(1.5f);
+        wlPlayer.setPitch(1.0f);
+    }
+
+    public void pitch(View view) {
+        wlPlayer.setPitch(1.5f);
+        wlPlayer.setSpeed(1.0f);
+    }
+
+    public void speedpitch(View view) {
+        wlPlayer.setSpeed(1.5f);
+        wlPlayer.setPitch(1.5f);
+    }
+
+    public void normalspeedpitch(View view) {
+        wlPlayer.setSpeed(1.0f);
+        wlPlayer.setPitch(1.0f);
+    }
 }

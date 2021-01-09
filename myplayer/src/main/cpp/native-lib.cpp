@@ -150,4 +150,22 @@ Java_com_wyp_myplayer_player_WlPlayer_n_1volume(JNIEnv *env, jobject instance, j
         fFmpeg->setVolume(percent);
     }
 
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_wyp_myplayer_player_WlPlayer_n_1pitch(JNIEnv *env, jobject instance, jfloat pitch) {
+
+    // TODO
+    if(fFmpeg!=NULL){
+        fFmpeg->setPitch(pitch);
+    }
+
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_wyp_myplayer_player_WlPlayer_n_1speed(JNIEnv *env, jobject instance, jfloat speed) {
+
+    // TODO
+    if(fFmpeg!=NULL){
+        fFmpeg->setSpeed(speed);
+    }
+
 }

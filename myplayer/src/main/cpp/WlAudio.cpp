@@ -16,6 +16,13 @@ WlAudio::WlAudio(WlPlaystatus *wlPlaystatus,int sample_rate,WlCallJava * wlCallJ
     this->wlCallJava=wlCallJava;
     queue = new WlQueue(playstatus);
     buffer = static_cast<uint8_t *>(av_malloc(sample_rate * 2 * 2));
+
+    sampleBuffer = static_cast<SAMPLETYPE *>(malloc(sample_rate * 2 * 2));//分配空间大小
+    soundTouch = new SoundTouch();
+    soundTouch->setSampleRate(sample_rate);
+    soundTouch->setChannels(2);
+    soundTouch->setPitch(pitch);
+    soundTouch->setTempo(speed);
 }
 
 void * decodPlay(void * data){
@@ -30,14 +37,9 @@ void WlAudio::play() {
     pthread_create(&thread_play,NULL, decodPlay, this);
 }
 
-int WlAudio::resampleAudio() {
+int WlAudio::resampleAudio(void **pcmbuf) {
     int ret =0;
-    /*char *url="/data/user/0/com.wyp.mymusic/cache/mydream.pcm";
-    FILE *outFile = fopen(url, "wb+");
-    if (!outFile){
-        LOGE("can not open file : %s",url);
-        return -1;
-    }*/
+
     while (playstatus!=NULL&&!playstatus->exit){
         if(queue->getQueueSize() == 0)//加载中
         {
@@ -111,6 +113,7 @@ int WlAudio::resampleAudio() {
             //ret = fwrite(buffer,1,data_size,outFile);
             //LOGE("data_size is %d,ret=%d", data_size,ret);
 
+            *pcmbuf = buffer;//數據保存給pcmbuf，在getSoundTouchData裡面會使用
             now_time = avFrame->pts * av_q2d(time_base);
             if(now_time < clock)
             {
@@ -143,12 +146,54 @@ int WlAudio::resampleAudio() {
     return data_size;
 }
 
+
+int WlAudio::getSoundTouchData() {
+    while(playstatus != NULL && !playstatus->exit)
+    {
+        out_buffer = NULL;
+        if(finished)
+        {
+            finished = false;
+            data_size = resampleAudio(reinterpret_cast<void **>(&out_buffer));
+            if(data_size > 0)
+            {
+                for(int i = 0; i < data_size / 2 + 1; i++)
+                {
+                    sampleBuffer[i] = (out_buffer[i * 2] | ((out_buffer[i * 2 + 1]) << 8));
+                }
+                soundTouch->putSamples(sampleBuffer, nb);
+                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
+            } else{
+                soundTouch->flush();//处理缓存。
+            }
+        }
+        if(num == 0)
+        {
+            finished = true;
+            continue;
+        } else{
+            if(out_buffer == NULL)
+            {
+                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
+                if(num == 0)
+                {
+                    finished = true;
+                    continue;
+                }
+            }
+            return num;
+        }
+    }
+    return 0;
+}
+
+
 void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void * context)
 {
     WlAudio *wlAudio = (WlAudio *) context;
     if(wlAudio != NULL)
     {
-        int buffersize = wlAudio->resampleAudio();
+        int buffersize = wlAudio->getSoundTouchData();
         if(buffersize > 0)
         {
             wlAudio->clock += buffersize / ((double)(wlAudio->sample_rate * 2 * 2));
@@ -158,7 +203,7 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void * context)
                 //回调应用层
                 wlAudio->wlCallJava->onCallTimeInfo(CHILD_THREAD, wlAudio->clock, wlAudio->duration);
             }
-            (* wlAudio-> pcmBufferQueue)->Enqueue( wlAudio->pcmBufferQueue, (char *) wlAudio-> buffer, buffersize);
+            (* wlAudio-> pcmBufferQueue)->Enqueue( wlAudio->pcmBufferQueue, (char *) wlAudio-> sampleBuffer, buffersize*2*2);
         }
     }
 }
@@ -388,3 +433,21 @@ void WlAudio::setVolume(int percent) {
         }
     }
 }
+
+void WlAudio::setPitch(float pitch) {
+    this->pitch = pitch;
+    if(soundTouch != NULL)
+    {
+        soundTouch->setPitch(pitch);
+    }
+}
+
+void WlAudio::setSpeed(float speed) {
+    this->speed = speed;
+    if(soundTouch != NULL)
+    {
+        soundTouch->setTempo(speed);
+    }
+}
+
+

@@ -43,6 +43,8 @@ public:
     void release();
     void seek(int64_t secds);
     void setVolume(int percent);
+    void setPitch(float pitch);
+    void setSpeed(float speed);
 
 };
 
