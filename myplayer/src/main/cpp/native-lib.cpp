@@ -179,3 +179,27 @@ Java_com_wyp_myplayer_player_WlPlayer_n_1mute(JNIEnv *env, jobject instance, jin
     }
 
 }
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_wyp_myplayer_player_WlPlayer_n_1samplerate(JNIEnv *env, jobject instance) {
+
+    if(fFmpeg != NULL)
+    {
+        return fFmpeg->getSampleRate();
+    }
+    return 0;
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_wyp_myplayer_player_WlPlayer_n_1startstoprecord(JNIEnv *env, jobject instance,
+                                                         jboolean start) {
+
+    if(fFmpeg != NULL)
+    {
+        fFmpeg->startStopRecord(start);
+    }
+
+}

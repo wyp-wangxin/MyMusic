@@ -1,5 +1,6 @@
 package com.wyp.mymusic;
 
+import android.media.MediaCodec;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,8 @@ import com.wyp.myplayer.log.MyLog;
 import com.wyp.myplayer.muteenum.MuteEnum;
 import com.wyp.myplayer.player.WlPlayer;
 import com.wyp.myplayer.util.WlTimeUtil;
+
+import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -160,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
 
         wlPlayer.setSource("http://v-cdn.zjol.com.cn/276982.mp4");
         wlPlayer.parpared();
+         MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+
 
     }
 
@@ -233,5 +238,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void center(View view) {
         wlPlayer.setMute(MuteEnum.MUTE_CENTER);
+    }
+
+    public void start_record(View view) {
+
+        //wlPlayer.startRecord(new File("/mnt/shared/Other/textplayer-1.aac"));
+        wlPlayer.startRecord(new File("/storage/emulated/0/Pictures/textplayer-1.aac"));
+
+    }
+
+    public void pause_record(View view) {
+        wlPlayer.pauseRecord();
+    }
+
+    public void goon_record(View view) {
+        wlPlayer.resumeRcord();
+    }
+
+    public void stop_record(View view) {
+        wlPlayer.stopRecord();
     }
 }

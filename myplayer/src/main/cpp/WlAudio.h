@@ -70,7 +70,7 @@ public:
 
     float pitch = 1.0f;//默認音調
     float speed = 1.0f;//默認音樂速度
-
+    bool isRecordPcm = false ;
 
 public:
     WlAudio(WlPlaystatus* wlPlaystatus,int sample_rate,WlCallJava * wlCallJava);
@@ -101,6 +101,8 @@ public:
     void setSpeed(float speed);//設置音速
 
     int getPCMDB(char *pcmcata, size_t pcmsize);
+
+    void startStopRecord(bool start);
 };
 
 

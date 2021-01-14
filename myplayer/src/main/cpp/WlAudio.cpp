@@ -203,6 +203,12 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void * context)
                 //回调应用层
                 wlAudio->wlCallJava->onCallTimeInfo(CHILD_THREAD, wlAudio->clock, wlAudio->duration);
             }
+
+            if(wlAudio->isRecordPcm)
+            {
+                LOGD("start recorder ！！");
+                wlAudio->wlCallJava->onCallPcmToAAc(CHILD_THREAD, buffersize * 2 * 2, wlAudio->sampleBuffer);
+            }
             wlAudio->wlCallJava->onCallValumeDB(CHILD_THREAD,
             wlAudio->getPCMDB(reinterpret_cast<char *>(wlAudio->sampleBuffer), buffersize * 4));
             (* wlAudio-> pcmBufferQueue)->Enqueue( wlAudio->pcmBufferQueue, (char *) wlAudio-> sampleBuffer, buffersize*2*2);
@@ -494,6 +500,11 @@ int WlAudio::getPCMDB(char *pcmcata, size_t pcmsize) {
         db = (int)20.0 *log10(sum);
     }
     return db;
+}
+
+void WlAudio::startStopRecord(bool start) {
+    this->isRecordPcm = start;
+
 }
 
 

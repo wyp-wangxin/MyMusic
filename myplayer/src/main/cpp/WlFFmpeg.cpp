@@ -354,3 +354,18 @@ void WlFFmpeg::setMute(int mute) {
         audio->setMute(mute);
     }
 }
+
+int WlFFmpeg::getSampleRate() {
+    if(audio != NULL)
+    {
+        return audio->avCodecContext->sample_rate;
+    }
+    return 0;
+}
+
+void WlFFmpeg::startStopRecord(bool start) {
+    if(audio != NULL)
+    {
+        audio->startStopRecord(start);
+    }
+}
