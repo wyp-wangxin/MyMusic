@@ -2,6 +2,7 @@
 // Created by yangw on 2018-2-28.
 //
 
+
 #include "WlAudio.h"
 
 
@@ -41,6 +42,12 @@ int WlAudio::resampleAudio(void **pcmbuf) {
     int ret =0;
 
     while (playstatus!=NULL&&!playstatus->exit){
+
+        if(playstatus->seek)
+        {
+            av_usleep(1000 * 100);
+            continue;
+        }
         if(queue->getQueueSize() == 0)//加载中
         {
             if(!playstatus->load)
@@ -48,6 +55,7 @@ int WlAudio::resampleAudio(void **pcmbuf) {
                 playstatus->load = true;
                 wlCallJava->onCallLoad(CHILD_THREAD, true);
             }
+            av_usleep(1000 * 100);
             continue;
         } else{
             if(playstatus->load)
@@ -364,6 +372,8 @@ void WlAudio::release() {//回收资源
         pcmPlayerObject = NULL;
         pcmPlayerPlay = NULL;
         pcmBufferQueue = NULL;
+        pcmMutePlay = NULL;
+        pcmVolumePlay = NULL;
     }
 
     if(outputMixObject != NULL)
@@ -385,7 +395,20 @@ void WlAudio::release() {//回收资源
         free(buffer);
         buffer = NULL;
     }
-
+    if(out_buffer != NULL)
+    {
+        out_buffer = NULL;
+    }
+    if(soundTouch == NULL)
+    {
+        delete soundTouch;
+        soundTouch = NULL;
+    }
+    if(sampleBuffer != NULL)
+    {
+        free(sampleBuffer);
+        sampleBuffer = NULL;
+    }
     if(avCodecContext != NULL)
     {
         avcodec_close(avCodecContext);

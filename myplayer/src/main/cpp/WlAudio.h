@@ -12,6 +12,7 @@
 #include "SoundTouch.h"
 extern "C"
 {
+#include <libavutil/time.h>
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 #include "libavcodec/avcodec.h"

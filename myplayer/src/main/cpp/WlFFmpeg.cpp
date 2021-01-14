@@ -161,11 +161,13 @@ void WlFFmpeg::start() {
     {
         if(playstatus->seek)
         {
+            av_usleep(1000 * 100);
             continue;
         }
 
-        if(audio->queue->getQueueSize() > 20)
+        if(audio->queue->getQueueSize() > 100)
         {
+            av_usleep(1000 * 100);
             continue;
         }
         AVPacket *avPacket = av_packet_alloc();
@@ -199,6 +201,7 @@ void WlFFmpeg::start() {
             {
                 if(audio->queue->getQueueSize() > 0)
                 {
+                    av_usleep(1000 * 100);
                     continue;
                 } else{
                     LOGE(" playstatus decode finished");

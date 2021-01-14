@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.4.1)
 include_directories(src/main/cpp/include)
 include_directories(src/main/cpp/soundtouch/include)
 include_directories(src/main/cpp/soundtouch/SoundTouch)
-
+# 这一句用来导出编译生成的so库
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/jniLibs/${ANDROID_ABI})
 add_library( # Sets the name of the library.
              native-lib
 
