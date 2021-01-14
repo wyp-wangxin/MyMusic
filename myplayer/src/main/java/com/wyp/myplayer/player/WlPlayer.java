@@ -13,6 +13,7 @@ import com.wyp.myplayer.listener.WlOnParparedListener;
 import com.wyp.myplayer.listener.WlOnPauseResumeListener;
 import com.wyp.myplayer.listener.WlOnTimeInfoListener;
 import com.wyp.myplayer.listener.WlOnValumeDBListener;
+import com.wyp.myplayer.listener.WlOnRecordTimeListener;
 import com.wyp.myplayer.log.MyLog;
 import com.wyp.myplayer.muteenum.MuteEnum;
 
@@ -57,6 +58,10 @@ public class WlPlayer {
     private WlOnCompleteListener wlOnCompleteListener;
     private WlOnValumeDBListener wlOnValumeDBListener;
 
+
+
+    private WlOnRecordTimeListener wlOnRecordTimeListener;
+
     public WlPlayer()
     {}
 
@@ -100,6 +105,10 @@ public class WlPlayer {
 
     public void setWlOnValumeDBListener(WlOnValumeDBListener wlOnValumeDBListener) {
         this.wlOnValumeDBListener = wlOnValumeDBListener;
+    }
+
+    public void setWlOnRecordTimeListener(WlOnRecordTimeListener wlOnRecordTimeListener) {
+        this.wlOnRecordTimeListener = wlOnRecordTimeListener;
     }
 
     public void parpared()
@@ -222,10 +231,11 @@ public class WlPlayer {
     {
         if(!initmediacodec)
         {
+           audioSamplerate = n_samplerate();
             if(n_samplerate() > 0)
             {
                 initmediacodec = true;
-                initMediacodec(n_samplerate(), outfile);
+                initMediacodec(audioSamplerate, outfile);
                 n_startstoprecord(true);
                 MyLog.d("开始录制");
             }
@@ -348,6 +358,8 @@ public class WlPlayer {
     private int perpcmsize = 0;
     private byte[] outByteBuffer = null;
     private int aacsamplerate = 4;
+    private double recordTime = 0;//计算录拨的时间长度
+    private int audioSamplerate = 0;
 
     private void initMediacodec(int samperate, File outfile)
     {
@@ -364,6 +376,7 @@ public class WlPlayer {
                 MyLog.d("craete encoder wrong");
                 return;
             }
+            recordTime = 0;
             encoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
             outputStream = new FileOutputStream(outfile);
             encoder.start();
@@ -374,7 +387,13 @@ public class WlPlayer {
 
     private void encodecPcmToAAc(int size, byte[] buffer)
     {
+        recordTime += size * 1.0 / (audioSamplerate * 2 * (16 / 8));//原理就是累加每一帧播放需要的时间
 
+        MyLog.d("recordTime = " + recordTime);
+        if(wlOnRecordTimeListener != null)
+        {
+            wlOnRecordTimeListener.onRecordTime((int) recordTime);
+        }
         if(buffer != null && encoder != null)
         {
             int inputBufferindex = encoder.dequeueInputBuffer(0);
@@ -484,6 +503,7 @@ public class WlPlayer {
             return;
         }
         try {
+            audioSamplerate = 0;
             outputStream.close();
             outputStream = null;
             encoder.stop();
